@@ -49,7 +49,7 @@ This proposal outlines the architecture, scope, and delivery plan for building a
 * GFE intake
 * Case workflow engine
 * Prescription approval/denial
-* PMS routing & adapters: **YupMD (first-class internal PMS)**, then PioneerRx/LifeFile/Custom as extensions
+* PMS routing & adapters: **YupMD (first-class internal PMS)**.
 * Telehealth integration
 * Immutable audit log
 * Notifications (SMS/email)
@@ -140,8 +140,6 @@ flowchart LR
 
   subgraph PMS [Pharmacy Mgmt Systems]
     YUP([YupMD PMS])
-    PIO([PioneerRx])
-    LIF([LifeFile])
     CUS([Custom PMS])
   end
 
@@ -165,7 +163,7 @@ flowchart TB
   RX[Prescription Service]
   CAT[Medication Catalog]
   ROUTER[PMS Router]
-  ADAPTERS[Adapters: YupMD, PioneerRx, LifeFile, Custom]
+  ADAPTERS[Adapters: YupMD, Custom]
   TEL[Telehealth]
   NOTIF[Notifications]
   AUD[Audit Service]
@@ -214,8 +212,7 @@ flowchart TB
   subgraph External
     SMS[SMS Provider]
     VIDEO[Video Vendor]
-    PIO[PioneerRx]
-    LIF[LifeFile]
+    PIO[YupMD]
     CUS[Custom PMS]
   end
 
@@ -338,7 +335,7 @@ flowchart LR
   * `POST /api/v1/prescriptions/{id}/deny` → deny prescription with reason
 * **Orders**
 
-  * `POST /api/v1/orders` → place order into Router. Body may include `routeHint` values like `"YupMD"`, `"PioneerRx"`, `"LifeFile"`.
+  * `POST /api/v1/orders` → place order into Router. Body may include `routeHint` values like `"YupMD"`.
   * `GET /api/v1/orders/{id}/status` → fetch order status
   * `POST /api/v1/orders/{id}/retry` → retry failed order
 * **Webhooks**
@@ -604,7 +601,6 @@ erDiagram
 ### 11.1 Adapter strategy (YupMD-first)
 
 * **Primary (MVP): YupMD Adapter** — our internal PMS. Lowest latency path with tight contract control. Uses REST/JSON over TLS with HMAC signed webhooks.
-* **Post‑MVP Extensions:** PioneerRx (API/SFTP), LifeFile (API/SFTP), Custom PMS (configurable). Implemented behind the same Router contract.
 
 ### 11.2 Contracts by adapter
 
@@ -618,11 +614,6 @@ erDiagram
     * Payload: `{ externalId, localOrderId, status: "ACKNOWLEDGED|ERROR|FILLED", code?, message? }`
   * **Auth**: mTLS (intra‑org) + HMAC signature header `X-Signature`.
   * **Idempotency**: `Idempotency-Key` honored; duplicate submits are no‑ops.
-
-* **PioneerRx / LifeFile / Custom PMS** (Post‑MVP)
-
-  * Support API and/or SFTP file‑drop where required.
-  * Normalize ACK/ERROR into Router status model.
 
 ### 11.3 Routing rules
 
@@ -834,14 +825,6 @@ Following the 6-month MVP launch, we will concurrently operate the MVP while con
 * **Phase 5 (6-week 19–24):** Admin console, Reporting, Performance tuning, Security review
 
 **Total Elapsed (MVP):** **~12–24 weeks for MVP readiness**
-
-
-**Post‑MVP Extensions (separate SOW):**
-
-* Adapter: PioneerRx (E ≈ 317 hrs)
-* Adapter: LifeFile (E ≈ 280 hrs)
-
-(These can be scheduled as Phase 6; not included in MVP total above.)
 
 ---
 
