@@ -781,12 +781,9 @@ sequenceDiagram
 
 ---
 
-## 18. Cost & FinOps
-
-* **Drivers:** RDS/Aurora, S3, SMS, Video APIs.
-* **Optimization:** Reserved instances, S3 tiering, SMS batching.
-* **Monitoring:** Cost dashboards, budget alerts.
-* **Shared Responsibility:** Clients billed for telehealth/SMS usage where feasible.
+## 18. DevOps & Infra
+* **Cloud Service:** AWS Cloud Service.
+* **Drivers:** RDS/Aurora, S3, SMS, Zoom API.
 
 ---
 
