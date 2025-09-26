@@ -615,22 +615,7 @@ erDiagram
   * **Auth**: mTLS (intra‑org) + HMAC signature header `X-Signature`.
   * **Idempotency**: `Idempotency-Key` honored; duplicate submits are no‑ops.
 
-### 11.3 Routing rules
-
-* Rules DSL unchanged; **default target = YupMD** unless a higher‑priority rule matches (e.g., geography, payer, product pilot to external PMS).
-* Example: `when target == null then target = 'YupMD'`.
-
-### 11.4 Retries & idempotency
-
-* Exponential backoff, max attempts configurable (default 5), then DLQ.
-* Idempotency keys stored at Router; adapters must be idempotent.
-
-### 11.5 Observability
-
-* Per‑adapter metrics: submit latency, ACK SLO, error rate, queue depth.
-* Correlate by `orderId` and `externalId` across EMR↔YupMD.
-
-### 11.6 YupMD Order Flow — Sequence Diagram
+### 11.3 YupMD Order Flow — Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -660,7 +645,7 @@ sequenceDiagram
   end
 ```
 
-### 11.7 Integration Deep Dive & Gaps (YupMD)
+### 11.7 Integration with YupMD
 
 **Authentication & transport**
 
